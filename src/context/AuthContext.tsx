@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      const userDocRef = doc(db, 'users', currentUser.uid);
+      const userDocRef = doc(db, 'users', currentUser.id);
 
       const unsubscribeDoc = onSnapshot(
         userDocRef,
@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             try {
               const initialRank = GURU_RANKS[0].title;
               const newProfile: UserProfile = {
-                id: currentUser.uid,
+                id: currentUser.id,
                 email: currentUser.email || '',
                 displayName: currentUser.displayName || 'Gado Inicial',
                 photoURL: currentUser.photoURL || '',
@@ -106,13 +106,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
               await setDoc(userDocRef, newProfile);
             } catch (err) {
-              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser.uid}`);
+              handleFirestoreError(err, OperationType.WRITE, `users/${currentUser.id}`);
             }
             setLoading(false);
           }
         },
         (error) => {
-          handleFirestoreError(error, OperationType.GET, `users/${currentUser.uid}`);
+          handleFirestoreError(error, OperationType.GET, `users/${currentUser.id}`);
           setLoading(false);
         }
       );
@@ -178,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    */
   const resetUserProgress = useCallback(async () => {
     if (!user) return;
-    const userDocRef = doc(db, 'users', user.uid);
+    const userDocRef = doc(db, 'users', user.id);
     try {
       const initialRank = GURU_RANKS[0].title;
       const secretAchievement = getAchievementById('TESTADOR_REINCIDENTE');
@@ -212,7 +212,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         celebrateAchievement(secretAchievement);
       }
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+      handleFirestoreError(error, OperationType.UPDATE, `users/${user.id}`);
     }
   }, [user, celebrateAchievement]);
 
@@ -261,7 +261,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // If user is authenticated, sync to Firestore and check streak achievements
       if (user) {
-        const userDocRef = doc(db, 'users', user.uid);
+        const userDocRef = doc(db, 'users', user.id);
         try {
           const snap = await getDoc(userDocRef);
           if (snap.exists()) {
@@ -292,7 +292,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             popupsToTrigger.forEach((ach) => celebrateAchievement(ach));
           }
         } catch (err) {
-          handleFirestoreError(err, OperationType.UPDATE, `users/${user.uid}`);
+          handleFirestoreError(err, OperationType.UPDATE, `users/${user.id}`);
         }
       }
 
@@ -308,7 +308,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     async (achievementId: string, customBonusPoints?: number) => {
       if (!user) return;
 
-      const userDocRef = doc(db, 'users', user.uid);
+      const userDocRef = doc(db, 'users', user.id);
       try {
         const snap = await getDoc(userDocRef);
         if (!snap.exists()) return;
@@ -338,7 +338,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         celebrateAchievement(achievementObj);
       } catch (error) {
-        handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+        handleFirestoreError(error, OperationType.UPDATE, `users/${user.id}`);
       }
     },
     [user, celebrateAchievement]
@@ -401,7 +401,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (achievement) celebrateAchievement(achievement);
         });
       } catch (error) {
-        handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+        handleFirestoreError(error, OperationType.UPDATE, `users/${user.id}`);
         throw error;
       }
     },
@@ -414,7 +414,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const recordConsultation = useCallback(
     async (questionText?: string) => {
       if (!user) return;
-      const userDocRef = doc(db, 'users', user.uid);
+      const userDocRef = doc(db, 'users', user.id);
       try {
         const snap = await getDoc(userDocRef);
         if (!snap.exists()) return;
@@ -466,7 +466,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         popupsToTrigger.forEach((ach) => celebrateAchievement(ach));
       } catch (error) {
-        handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+        handleFirestoreError(error, OperationType.UPDATE, `users/${user.id}`);
       }
     },
     [user, celebrateAchievement]
@@ -478,7 +478,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const recordQuizCompletion = useCallback(
     async (scorePercentage?: number) => {
       if (!user) return;
-      const userDocRef = doc(db, 'users', user.uid);
+      const userDocRef = doc(db, 'users', user.id);
       try {
         const snap = await getDoc(userDocRef);
         if (!snap.exists()) return;
@@ -517,7 +517,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         popupsToTrigger.forEach((ach) => celebrateAchievement(ach));
       } catch (error) {
-        handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+        handleFirestoreError(error, OperationType.UPDATE, `users/${user.id}`);
       }
     },
     [user, celebrateAchievement]
@@ -529,7 +529,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const recordMantraCompletion = useCallback(
     async (mantraDifficulty: string, secondsTaken?: number) => {
       if (!user) return;
-      const userDocRef = doc(db, 'users', user.uid);
+      const userDocRef = doc(db, 'users', user.id);
       try {
         const snap = await getDoc(userDocRef);
         if (!snap.exists()) return;
@@ -579,7 +579,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         popupsToTrigger.forEach((ach) => celebrateAchievement(ach));
       } catch (error) {
-        handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+        handleFirestoreError(error, OperationType.UPDATE, `users/${user.id}`);
       }
     },
     [user, celebrateAchievement]
