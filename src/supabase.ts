@@ -98,6 +98,16 @@ export async function setDoc(ref: DocumentReference, value: any) {
   if (error) throw error;
 }
 
+export async function completeTask(taskId: string, alphaScore: number) {
+  const { data, error } = await supabase.rpc('complete_own_task', {
+    p_task_id: taskId,
+    p_alpha_score: alphaScore,
+  });
+  if (error) throw error;
+  if (!data) throw new Error('A missão não foi registrada.');
+  return data as any;
+}
+
 export async function updateDoc(ref: DocumentReference, value: any) {
   if (ref.collection === 'users') {
     // All user-progress writes go through a database RPC that verifies auth.uid().
