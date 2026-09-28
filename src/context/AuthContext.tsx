@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithRedirect, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from '../firebase';
@@ -135,10 +135,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      toxicAudio.playCashRegister();
+      // Redirect is more reliable than a popup on GitHub Pages and mobile browsers.
+      await signInWithRedirect(auth, googleProvider);
     } catch (error) {
       console.error('Google Sign-in failed:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Não foi possível entrar com Google.\n\n${message}`);
     }
   };
 
