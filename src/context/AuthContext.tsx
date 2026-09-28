@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, onAuthStateChanged, signInWithRedirect, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { User, onAuthStateChanged, signInWithRedirect, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../supabase';
+import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp } from '../supabase';
 import confetti from 'canvas-confetti';
-import { auth, db, googleProvider, handleFirestoreError, OperationType } from '../firebase';
+import { auth, db, googleProvider, handleFirestoreError, OperationType } from '../supabase';
 import { UserProfile, GuruRank, Achievement } from '../types';
 import { GURU_RANKS, getRankByPoints, getNextRank, ACHIEVEMENTS_LIST, getAchievementById } from '../data/rankData';
 import { toxicAudio } from '../utils/audio';
