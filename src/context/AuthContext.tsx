@@ -389,6 +389,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       try {
         const completed = await completeTask(taskId, alphaScore, difficulty);
+        // Apply the authoritative server result immediately; polling remains as a safety net.
+        setProfile((prev) => prev ? { ...prev, ...completed } as UserProfile : completed as UserProfile);
         const unlockedIds = Array.isArray(completed?.achievements)
           ? completed.achievements as string[]
           : [];
