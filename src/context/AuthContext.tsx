@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, onAuthStateChanged, signInWithRedirect, signOut } from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithRedirect, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from '../firebase';
@@ -25,6 +25,7 @@ interface AuthContextType {
   achievementQueue: Achievement[];
   dismissCurrentAchievement: () => void;
   loginWithGoogle: () => Promise<void>;
+  loginWithEmail: (email: string, password: string, createAccount?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   resetUserProgress: () => Promise<void>;
   unlockAchievement: (achievementId: string, customBonusPoints?: number) => Promise<void>;
@@ -141,6 +142,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Google Sign-in failed:', error);
       const message = error instanceof Error ? error.message : String(error);
       alert(`Não foi possível entrar com Google.\n\n${message}`);
+    }
+  };
+
+  const loginWithEmail = async (email: string, password: string, createAccount = false) => {
+    const cleanEmail = email.trim();
+    if (!cleanEmail || password.length < 6) {
+      throw new Error('Informe um e-mail válido e uma senha com pelo menos 6 caracteres.');
+    }
+    try {
+      if (createAccount) {
+        await createUserWithEmailAndPassword(auth, cleanEmail, password);
+      } else {
+        await signInWithEmailAndPassword(auth, cleanEmail, password);
+      }
+      toxicAudio.playCashRegister();
+    } catch (error) {
+      console.error('Email sign-in failed:', error);
+      throw error;
     }
   };
 
@@ -669,6 +688,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         achievementQueue,
         dismissCurrentAchievement,
         loginWithGoogle,
+        loginWithEmail,
         logout,
         resetUserProgress,
         unlockAchievement,
