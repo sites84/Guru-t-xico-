@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Quote, Sparkles, RefreshCw, Copy, Check, Flame, Bot } from 'lucide-react';
 import { toxicAudio } from '../utils/audio';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 const PROCEDURAL_DAILY_MANTRAS = [
   'Se você precisa de despertador para acordar às 04:00, seu concorrente já comprou o prédio onde você dorme e aumentou o seu aluguel.',
   'Dormir 8 horas é terceirizar o próprio fracasso para o subconsciente. O cérebro só descansa no caixão.',
@@ -36,7 +38,7 @@ export const ToxicDailyMantra: React.FC = () => {
     setCopied(false);
 
     try {
-      const res = await fetch('/api/gemini/mantra', {
+      const res = await fetch(`${API_BASE_URL}/api/gemini/mantra`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
