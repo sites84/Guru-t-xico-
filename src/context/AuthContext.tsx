@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, onAuthStateChanged, signInWithRedirect, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../supabase';
-import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp } from '../supabase';
+import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp, completeTask } from '../supabase';
 import confetti from 'canvas-confetti';
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from '../supabase';
 import { UserProfile, GuruRank, Achievement } from '../types';
@@ -387,21 +387,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     async (taskId: string, alphaScore: number, difficulty: string) => {
       if (!user) return;
 
-      const userDocRef = doc(db, 'users', user.uid);
       try {
-        const snap = await getDoc(userDocRef);
-        if (!snap.exists()) return;
+        // Atomic server-side completion: points and task ID are saved together.
+        const completed = await completeTask(taskId, alphaScore);
 
-        const currentData = snap.data() as UserProfile;
-        const alreadyCompleted = currentData.completedTaskIds?.includes(taskId);
-        if (alreadyCompleted) return;
-
-        const nextCompletedTasks = [...(currentData.completedTaskIds || []), taskId];
-        const nextPoints = (currentData.totalPoints || 0) + alphaScore;
-        const nextTasksCount = (currentData.completedTasksCount || 0) + 1;
-        const nextRank = getRankByPoints(nextPoints);
-
-        const newAchievements = [...(currentData.achievements || [])];
+        const nextPoints = Number(completed.totalPoints || 0);
+        const nextTasksCount = Number(completed.completedTasksCount || 0);
+        const currentAchievements = [...(completed.achievements || [])];
+        const newAchievements = [...currentAchievements];
         const popupsToTrigger: Achievement[] = [];
 
         const testAndQueue = (achId: string, condition: boolean) => {
@@ -412,7 +405,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         };
 
-        // Task count milestones
         testAndQueue('PRIMEIRA_HUMILHACAO', nextTasksCount >= 1);
         testAndQueue('DOIS_PASSOS_ABISMO', nextTasksCount >= 2);
         testAndQueue('GUERREIRO_LOUCURA', nextTasksCount >= 5);
@@ -423,12 +415,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         testAndQueue('MONSTRO_40_TAREFAS', nextTasksCount >= 40);
         testAndQueue('LENDA_50_TAREFAS', nextTasksCount >= 50);
 
-        // Difficulties
         testAndQueue('DESAFIO_DESUMANO', difficulty === 'Desumano');
         testAndQueue('ESPECIALISTA_RIDICULO', difficulty === 'Ridículo');
         testAndQueue('MESTRE_EXTREMO', difficulty === 'Extremo');
 
-        // Specific task easter eggs
         if (taskId === 'task-1' || taskId === 'task-5' || taskId === 'task-20') {
           testAndQueue('INIMIGO_DO_COLCHAO', true);
         }
@@ -436,20 +426,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           testAndQueue('TERROR_DO_MERCADO', true);
         }
 
-        // Points & Ranks milestones
         const rankPointUnlocks = checkRankAndPointAchievements(nextPoints, newAchievements);
         popupsToTrigger.push(...rankPointUnlocks);
 
-        await updateDoc(userDocRef, {
-          totalPoints: nextPoints,
-          completedTasksCount: nextTasksCount,
-          currentRank: nextRank.title,
-          achievements: newAchievements,
-          completedTaskIds: nextCompletedTasks,
-          updatedAt: serverTimestamp(),
-        });
+        if (newAchievements.length !== currentAchievements.length) {
+          await updateDoc(doc(db, 'users', user.uid), {
+            achievements: newAchievements,
+            updatedAt: serverTimestamp(),
+          });
+        }
 
-        // Trigger celebratory popups for all unlocked achievements
         popupsToTrigger.forEach((ach) => celebrateAchievement(ach));
       } catch (error) {
         handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
