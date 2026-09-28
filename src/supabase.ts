@@ -105,7 +105,7 @@ export async function completeTask(taskId: string, alphaScore: number) {
   });
   if (error) throw error;
   if (!data) throw new Error('A missão não foi registrada.');
-  return data as any;
+  return (Array.isArray(data) ? data[0] : data) as any;
 }
 
 export async function updateDoc(ref: DocumentReference, value: any) {
