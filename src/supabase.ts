@@ -37,9 +37,10 @@ export function onAuthStateChanged(_auth: typeof auth, callback: (user: User | n
 }
 
 export async function signInWithRedirect(_auth: typeof auth, provider: typeof googleProvider) {
+  const productionUrl = 'https://sites84.github.io/Guru-t-xico-/';
   const { error } = await supabase.auth.signInWithOAuth({
     provider: provider.provider,
-    options: { redirectTo: window.location.href },
+    options: { redirectTo: productionUrl },
   });
   if (error) throw error;
 }
