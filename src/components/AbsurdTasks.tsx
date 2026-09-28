@@ -119,9 +119,14 @@ export const AbsurdTasks: React.FC = () => {
 
   const handleComplete = async (task: AbsurdTask) => {
     if (completedIds.includes(task.id)) return;
+    // Do not consume the mission locally until the server confirms the points.
+    // This prevents failed saves from permanently locking the mission for testing.
+    if (user) {
+      await recordTaskCompletion(task.id, task.alphaScore, task.difficulty);
+    }
+
     const nextCompleted = [...completedIds, task.id];
     setCompletedIds(nextCompleted);
-
     localStorage.setItem(`guru_toxico_completed_10_${activeUserKey}_${currentDayKey}`, JSON.stringify(nextCompleted));
     toxicAudio.playStampThud();
 
@@ -145,9 +150,6 @@ export const AbsurdTasks: React.FC = () => {
       }
     }
 
-    if (user) {
-      await recordTaskCompletion(task.id, task.alphaScore, task.difficulty);
-    }
   };
 
   // Simular novo dia para teste (renovação automática e imediata)
