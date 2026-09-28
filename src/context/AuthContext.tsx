@@ -388,60 +388,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!user) return;
 
       try {
-        // Atomic server-side completion: points and task ID are saved together.
-        const completed = await completeTask(taskId, alphaScore);
+        const completed = await completeTask(taskId, alphaScore, difficulty);
+        const unlockedIds = Array.isArray(completed?.achievements)
+          ? completed.achievements as string[]
+          : [];
+        const previousIds = profile?.achievements || [];
+        const newlyUnlocked = unlockedIds.filter((id) => !previousIds.includes(id));
 
-        const nextPoints = Number(completed.totalPoints || 0);
-        const nextTasksCount = Number(completed.completedTasksCount || 0);
-        const currentAchievements = [...(completed.achievements || [])];
-        const newAchievements = [...currentAchievements];
-        const popupsToTrigger: Achievement[] = [];
-
-        const testAndQueue = (achId: string, condition: boolean) => {
-          if (condition && !newAchievements.includes(achId)) {
-            newAchievements.push(achId);
-            const item = getAchievementById(achId);
-            if (item) popupsToTrigger.push(item);
-          }
-        };
-
-        testAndQueue('PRIMEIRA_HUMILHACAO', nextTasksCount >= 1);
-        testAndQueue('DOIS_PASSOS_ABISMO', nextTasksCount >= 2);
-        testAndQueue('GUERREIRO_LOUCURA', nextTasksCount >= 5);
-        testAndQueue('SETE_PECADOS_ALPHA', nextTasksCount >= 7);
-        testAndQueue('PROTOCOLO_SPARTAN_10X', nextTasksCount >= 10);
-        testAndQueue('MARATONISTA_15_TAREFAS', nextTasksCount >= 15);
-        testAndQueue('VETERANO_25_TAREFAS', nextTasksCount >= 25);
-        testAndQueue('MONSTRO_40_TAREFAS', nextTasksCount >= 40);
-        testAndQueue('LENDA_50_TAREFAS', nextTasksCount >= 50);
-
-        testAndQueue('DESAFIO_DESUMANO', difficulty === 'Desumano');
-        testAndQueue('ESPECIALISTA_RIDICULO', difficulty === 'Ridículo');
-        testAndQueue('MESTRE_EXTREMO', difficulty === 'Extremo');
-
-        if (taskId === 'task-1' || taskId === 'task-5' || taskId === 'task-20') {
-          testAndQueue('INIMIGO_DO_COLCHAO', true);
-        }
-        if (taskId === 'task-8' || taskId === 'task-12' || taskId === 'task-62') {
-          testAndQueue('TERROR_DO_MERCADO', true);
-        }
-
-        const rankPointUnlocks = checkRankAndPointAchievements(nextPoints, newAchievements);
-        popupsToTrigger.push(...rankPointUnlocks);
-
-        if (newAchievements.length !== currentAchievements.length) {
-          await updateDoc(doc(db, 'users', user.uid), {
-            achievements: newAchievements,
-            updatedAt: serverTimestamp(),
-          });
-        }
-
-        popupsToTrigger.forEach((ach) => celebrateAchievement(ach));
+        // The database is now the single source of truth for points and achievements.
+        newlyUnlocked.forEach((id) => {
+          const achievement = getAchievementById(id);
+          if (achievement) celebrateAchievement(achievement);
+        });
       } catch (error) {
         handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
+        throw error;
       }
     },
-    [user, celebrateAchievement]
+    [user, profile?.achievements, celebrateAchievement]
   );
 
   /**
