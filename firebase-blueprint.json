@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Perfil do usuário com pontuação, patente de guru, conquistas e tarefas concluídas",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Firebase Auth UID",
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "description": "Email do usuário",
+          "maxLength": 128
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Nome de exibição do usuário",
+          "maxLength": 100
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL do avatar do usuário",
+          "maxLength": 500
+        },
+        "totalPoints": {
+          "type": "number",
+          "description": "Pontuação acumulada de insanidade"
+        },
+        "completedTasksCount": {
+          "type": "number",
+          "description": "Total de tarefas absurdas cumpridas"
+        },
+        "currentRank": {
+          "type": "string",
+          "description": "Patente atual do usuário na hierarquia tóxica",
+          "maxLength": 80
+        },
+        "achievements": {
+          "type": "array",
+          "description": "Lista de IDs das conquistas desbloqueadas",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        "completedTaskIds": {
+          "type": "array",
+          "description": "Lista de IDs das tarefas já concluídas",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação do perfil"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última atualização"
+        }
+      },
+      "required": ["id", "email", "displayName", "totalPoints", "completedTasksCount", "currentRank", "achievements", "completedTaskIds", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Documentos privados de perfil e progresso de cada usuário autenticado"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Guru Tóxico",
+  "description": "O simulador viral de motivação tóxica extrema, 10 tarefas absurdas diárias, cases de sucesso ridículo e consulta pessoal com o guru.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
