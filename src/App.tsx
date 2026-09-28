@@ -195,11 +195,30 @@ function MainAppContent() {
                 </div>
               ) : (
                 <button
-                  onClick={loginWithGoogle}
+                  onClick={async () => {
+                    const email = window.prompt('E-mail:');
+                    if (!email) return;
+                    const password = window.prompt('Senha (mínimo 6 caracteres):');
+                    if (!password) return;
+                    try {
+                      await loginWithEmail(email, password, false);
+                    } catch (e) {
+                      const msg = e instanceof Error ? e.message : String(e);
+                      if (msg.includes('auth/user-not-found') || msg.includes('auth/invalid-credential')) {
+                        const criar = window.confirm('Usuário não encontrado. Deseja criar uma conta agora?');
+                        if (criar) {
+                          try { await loginWithEmail(email, password, true); }
+                          catch (e2) { alert(e2 instanceof Error ? e2.message : String(e2)); }
+                        }
+                      } else {
+                        alert(msg);
+                      }
+                    }
+                  }}
                   className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-neutral-900/80 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white text-xs font-tech cursor-pointer transition-all"
                 >
                   <Shield className="w-3.5 h-3.5 text-lime-400" />
-                  <span>Faça login com Google para gravar suas patentes e desbloquear conquistas</span>
+                  <span>Entre com e-mail e senha para gravar suas patentes e desbloquear conquistas</span>
                 </button>
               )}
             </div>
