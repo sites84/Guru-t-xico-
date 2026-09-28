@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs>
+<linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#12051f"/><stop offset=".5" stop-color="#42111f"/><stop offset="1" stop-color="#061c2d"/></linearGradient>
+<linearGradient id="b"><stop stop-color="#ffdf20"/><stop offset="1" stop-color="#ff4d5d"/></linearGradient>
+</defs>
+<rect width="1200" height="630" fill="url(#a)"/>
+<circle cx="90" cy="90" r="115" fill="#e3263f"/><circle cx="1100" cy="100" r="125" fill="#23c58a"/><circle cx="970" cy="540" r="150" fill="#315be8"/><circle cx="590" cy="80" r="90" fill="#ff3f9d"/>
+<g font-family="Arial, sans-serif" font-weight="900" fill="#fff">
+<text x="420" y="105" font-size="92" stroke="#000" stroke-width="4">GURU</text>
+<text x="420" y="190" font-size="78" stroke="#000" stroke-width="4">TÓXICO</text>
+<text x="425" y="245" font-size="37" fill="#ffe52e" stroke="#000" stroke-width="2">MOTIVAÇÃO SEM FREIO</text>
+</g>
+<g font-family="Arial,sans-serif" font-weight="900" font-size="27">
+<text x="25" y="42" fill="#fff">AMANHÃ EU COMEÇO</text>
+<g fill="#171717" stroke="#fff" stroke-width="2">
+<rect x="25" y="105" width="340" height="55" rx="12"/><rect x="25" y="175" width="340" height="55" rx="12"/><rect x="25" y="245" width="340" height="55" rx="12"/><rect x="25" y="315" width="340" height="55" rx="12"/><rect x="25" y="385" width="340" height="55" rx="12"/>
+</g>
+<g fill="#fff"><text x="43" y="141">PROCRASTINAÇÃO</text><text x="43" y="211">JOGOS</text><text x="43" y="281">COMIDA</text><text x="43" y="351">PREGUIÇA</text><text x="43" y="421">CAOS</text></g>
+</g>
+<g font-family="Arial,sans-serif" font-weight="900" font-size="27" stroke="#000" stroke-width="3">
+<rect x="410" y="290" width="385" height="56" rx="15" fill="#50ed82"/><text x="432" y="327" fill="#000">MISSÕES ABSURDAS</text>
+<rect x="410" y="355" width="385" height="56" rx="15" fill="#ffe126"/><text x="432" y="392" fill="#000">PONTOS + XP</text>
+<rect x="410" y="420" width="385" height="56" rx="15" fill="#ff5370"/><text x="432" y="457" fill="#000">CONQUISTAS</text>
+<rect x="410" y="485" width="385" height="56" rx="15" fill="#67a5ff"/><text x="432" y="522" fill="#000">PATENTES</text>
+</g>
+<g font-family="Arial,sans-serif" font-weight="900">
+<text x="850" y="50" font-size="52" fill="#fff" stroke="#000" stroke-width="3">EVOLUA</text>
+<g font-size="24" fill="#111">
+<path d="M850 90 L1165 70 L1165 135 L850 115Z" fill="#fff" stroke="#000" stroke-width="3"/><text x="875" y="112">HÁBITOS</text>
+<path d="M850 175 L1165 155 L1165 220 L850 200Z" fill="#fff" stroke="#000" stroke-width="3"/><text x="875" y="197">ESTUDOS</text>
+<path d="M850 260 L1165 240 L1165 305 L850 285Z" fill="#fff" stroke="#000" stroke-width="3"/><text x="875" y="282">TREINO</text>
+<path d="M850 345 L1165 325 L1165 390 L850 370Z" fill="#fff" stroke="#000" stroke-width="3"/><text x="875" y="367">PRODUTIVIDADE</text>
+<path d="M850 430 L1165 410 L1165 475 L850 455Z" fill="#fff" stroke="#000" stroke-width="3"/><text x="875" y="452">VIDA MAIS FODA</text>
+</g></g>
+<g stroke="#000" stroke-width="5"><circle cx="610" cy="575" r="55" fill="#f5be8c"/><path d="M560 535 L660 535 L625 500 L595 500Z" fill="#ffd31f"/></g>
+<circle cx="590" cy="568" r="7"/><circle cx="630" cy="568" r="7"/><path d="M592 585 Q610 600 628 585" fill="none" stroke="#000" stroke-width="5"/>
+<g><circle cx="730" cy="560" r="36" fill="#7b4a27" stroke="#000" stroke-width="4"/><circle cx="715" cy="545" r="18" fill="#8d5830"/><circle cx="745" cy="545" r="18" fill="#8d5830"/><circle cx="718" cy="552" r="5" fill="#fff"/><circle cx="742" cy="552" r="5" fill="#fff"/></g>
+<rect y="585" width="1200" height="45" fill="#000"/><text x="25" y="616" font-family="Arial" font-weight="900" font-size="25" fill="#fff">MISSÕES • PONTOS • CONQUISTAS • PATENTES • CAOS</text>
+</svg>
