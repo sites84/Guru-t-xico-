@@ -8,6 +8,8 @@ interface GuruAiRoastModalProps {
   onClose: () => void;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 const PROCEDURAL_ROASTS = [
   'Você está com sono? Que lindo. Enquanto você fecha os olhos para sonhar com contos de fadas, o estagiário da China já programou 4 microsserviços e comprou a dívida pública do seu bairro. Levante dessa cama antes que a gravidade decida cobrar aluguel do seu peso morto.',
   'Ah, você acha que tem ansiedade? Ansiedade é o nome chique que perdedor dá para falta de boleto alto no final do mês. Beba um copo de vinagre de maçã com pimenta preta, faça 70 flexões de punho cerrado e pare de choramingar.',
@@ -36,7 +38,7 @@ export const GuruAiRoastModal: React.FC<GuruAiRoastModalProps> = ({
     setResponse(null);
 
     try {
-      const res = await fetch('/api/gemini/roast', {
+      const res = await fetch(`${API_BASE_URL}/api/gemini/roast`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: prompt.trim() }),
