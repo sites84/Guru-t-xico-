@@ -34,7 +34,7 @@ jobs:
         run: npm install
 
       - name: Generate Open Graph PNG
-        run: convert -background none public/og-guru-toxico.svg public/og-guru-toxico.png
+        run: npx --yes sharp-cli -i public/og-guru-toxico.svg -o public/og-guru-toxico.png resize 1200 630
 
       - name: Build Vite app
         env:
