@@ -36,7 +36,7 @@ jobs:
       - name: Build Vite app
         env:
           GITHUB_PAGES: 'true'
-          VITE_API_BASE_URL: 'https://guru-toxico.onrender.com'
+          VITE_API_BASE_URL: 'https://guru-toxico.onrender.com'\n          VITE_SUPABASE_URL: 'https://qnxyrltqdegybgtyryaq.supabase.co'\n          VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_DG1YBDeloWQYlxpXpJhqEw_2yeShcGo'
         run: npm run build
 
       - name: Setup GitHub Pages
