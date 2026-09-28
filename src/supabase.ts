@@ -8,11 +8,15 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 export type User = SupabaseUser & {
   displayName?: string | null;
   photoURL?: string | null;
+  // Compatibility alias used by the original app code. Supabase exposes this as `id`.
+  uid: string;
 };
 
 function mapUser(user: SupabaseUser | null): User | null {
   if (!user) return null;
   return Object.assign(user, {
+    // Keep the original Firebase-style `uid` contract while using Supabase Auth underneath.
+    uid: user.id,
     displayName: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Gado Inicial',
     photoURL: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
   }) as User;
