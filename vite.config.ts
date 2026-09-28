@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/Guru-t-xico-/',
+    base: process.env.GITHUB_PAGES === 'true' ? '/Guru-t-xico-/' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
