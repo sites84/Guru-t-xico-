@@ -58,7 +58,7 @@ export const AbsurdTasks: React.FC = () => {
   const { dateString: currentDayKey, tasks } = getDailyTasks(dayOffset);
 
   // Chave de armazenamento exclusiva por usuário (ou 'guest') e por dia
-  const activeUserKey = user?.uid ? user.uid : 'guest';
+  const activeUserKey = user?.uid ? user.id : 'guest';
 
   // Lista de IDs concluídos para o dia ativo e para o usuário ativo
   const [completedIds, setCompletedIds] = useState<string[]>(() => {
