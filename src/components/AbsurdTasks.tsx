@@ -28,8 +28,26 @@ export function getDailyTasks(dayOffset: number = 0): { dateString: string; task
   return { dateString, tasks };
 }
 
+const TASK_STATE_VERSION = '3';
+
+function migrateTaskStorage() {
+  const version = localStorage.getItem('guru_toxico_task_state_version');
+  if (version === TASK_STATE_VERSION) return;
+
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith('guru_toxico_completed_10_') || key.startsWith('guru_toxico_celebration_')) {
+      localStorage.removeItem(key);
+    }
+  });
+  localStorage.removeItem('guru_toxico_day_offset');
+  localStorage.setItem('guru_toxico_task_state_version', TASK_STATE_VERSION);
+}
+
 export const AbsurdTasks: React.FC = () => {
   const { user, profile, recordTaskCompletion, recordDailyTasksCompleted, dailyStreak, loginWithGoogle, currentRank, setIsProfileOpen } = useAuth();
+
+  // One-time migration clears stale local mission locks from the broken save version.
+  migrateTaskStorage();
 
   // Offset de dias para permitir testar a renovação diária sem esperar 24 horas
   const [dayOffset, setDayOffset] = useState<number>(() => {
