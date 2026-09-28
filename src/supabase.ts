@@ -14,12 +14,13 @@ export type User = SupabaseUser & {
 
 function mapUser(user: SupabaseUser | null): User | null {
   if (!user) return null;
-  return Object.assign(user, {
-    // Keep the original Firebase-style `uid` contract while using Supabase Auth underneath.
+  // Return a new plain object. Supabase Auth user objects should not be mutated directly.
+  return {
+    ...user,
     uid: user.id,
     displayName: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Gado Inicial',
     photoURL: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
-  }) as User;
+  } as User;
 }
 
 export const auth = supabase.auth;
