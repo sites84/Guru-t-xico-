@@ -20,6 +20,12 @@ function MainAppContent() {
   // Termômetro de Mediocridade
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isAiRoastOpen, setIsAiRoastOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginCreateAccount, setLoginCreateAccount] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [loginBusy, setLoginBusy] = useState(false);
 
   const scrollToCases = () => {
     const el = document.getElementById('secao-cases');
@@ -128,26 +134,7 @@ function MainAppContent() {
               </button>
             ) : (
               <button
-                onClick={async () => {
-                  const email = window.prompt('E-mail:');
-                  if (!email) return;
-                  const password = window.prompt('Senha (mínimo 6 caracteres):');
-                  if (!password) return;
-                  try {
-                    await loginWithEmail(email, password, false);
-                  } catch (e) {
-                    const msg = e instanceof Error ? e.message : String(e);
-                    if (msg.includes('auth/user-not-found') || msg.includes('auth/invalid-credential')) {
-                      const criar = window.confirm('Usuário não encontrado. Deseja criar uma conta agora?');
-                      if (criar) {
-                        try { await loginWithEmail(email, password, true); }
-                        catch (e2) { alert(e2 instanceof Error ? e2.message : String(e2)); }
-                      }
-                    } else {
-                      alert(msg);
-                    }
-                  }
-                }}
+                onClick={() => { setLoginError(''); setIsLoginOpen(true); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-lime-400 hover:bg-lime-300 text-black font-bold font-tech text-xs rounded-xl transition-all cursor-pointer shrink-0 shadow-sm"
               >
                 <LogIn className="w-3.5 h-3.5 shrink-0" />
@@ -195,30 +182,11 @@ function MainAppContent() {
                 </div>
               ) : (
                 <button
-                  onClick={async () => {
-                    const email = window.prompt('E-mail:');
-                    if (!email) return;
-                    const password = window.prompt('Senha (mínimo 6 caracteres):');
-                    if (!password) return;
-                    try {
-                      await loginWithEmail(email, password, false);
-                    } catch (e) {
-                      const msg = e instanceof Error ? e.message : String(e);
-                      if (msg.includes('auth/user-not-found') || msg.includes('auth/invalid-credential')) {
-                        const criar = window.confirm('Usuário não encontrado. Deseja criar uma conta agora?');
-                        if (criar) {
-                          try { await loginWithEmail(email, password, true); }
-                          catch (e2) { alert(e2 instanceof Error ? e2.message : String(e2)); }
-                        }
-                      } else {
-                        alert(msg);
-                      }
-                    }
-                  }}
+                  onClick={() => { setLoginError(''); setIsLoginOpen(true); }}
                   className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-neutral-900/80 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white text-xs font-tech cursor-pointer transition-all"
                 >
                   <Shield className="w-3.5 h-3.5 text-lime-400" />
-                  <span>Entre com e-mail e senha para gravar suas patentes e desbloquear conquistas</span>
+                  <span>Entrar ou criar conta para gravar suas patentes e desbloquear conquistas</span>
                 </button>
               )}
             </div>
@@ -290,6 +258,76 @@ function MainAppContent() {
 
       {/* POPUP DE PRIMEIRO ACESSO DO DIA */}
       <DailyWelcomeModal />
+
+      {/* LOGIN MODAL */}
+      {isLoginOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-neutral-700 bg-[#10121a] shadow-2xl p-5 sm:p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-xl font-black text-white font-display">{loginCreateAccount ? 'Criar conta' : 'Entrar'}</h2>
+                <p className="text-xs text-neutral-400 mt-1">Seu progresso ficará salvo no seu perfil.</p>
+              </div>
+              <button onClick={() => setIsLoginOpen(false)} className="text-neutral-400 hover:text-white text-2xl leading-none">×</button>
+            </div>
+
+            <button
+              onClick={async () => { setLoginBusy(true); setLoginError(''); try { await loginWithGoogle(); } catch (e) { setLoginError(e instanceof Error ? e.message : String(e)); } finally { setLoginBusy(false); } }}
+              disabled={loginBusy}
+              className="w-full flex items-center justify-center gap-3 rounded-xl bg-white hover:bg-neutral-100 text-neutral-900 font-bold py-3 transition-colors disabled:opacity-50"
+            >
+              <span className="text-lg font-black">G</span>
+              <span>Continuar com Google</span>
+            </button>
+
+            <div className="flex items-center gap-3 my-5 text-[10px] text-neutral-500 font-tech uppercase">
+              <span className="h-px bg-neutral-800 flex-1" /><span>ou e-mail e senha</span><span className="h-px bg-neutral-800 flex-1" />
+            </div>
+
+            <div className="space-y-3">
+              <input
+                type="email"
+                value={loginEmail}
+                onChange={e => setLoginEmail(e.target.value)}
+                placeholder="E-mail"
+                autoComplete="email"
+                className="w-full rounded-xl bg-neutral-950 border border-neutral-700 px-4 py-3 text-white outline-none focus:border-lime-400"
+              />
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={e => setLoginPassword(e.target.value)}
+                placeholder="Senha (mínimo 6 caracteres)"
+                autoComplete={loginCreateAccount ? 'new-password' : 'current-password'}
+                className="w-full rounded-xl bg-neutral-950 border border-neutral-700 px-4 py-3 text-white outline-none focus:border-lime-400"
+              />
+              {loginError && <div className="rounded-xl border border-red-500/40 bg-red-950/30 px-3 py-2 text-xs text-red-300">{loginError}</div>}
+              <button
+                disabled={loginBusy}
+                onClick={async () => {
+                  setLoginBusy(true); setLoginError('');
+                  try {
+                    await loginWithEmail(loginEmail, loginPassword, loginCreateAccount);
+                    setIsLoginOpen(false); setLoginEmail(''); setLoginPassword('');
+                  } catch (e) {
+                    setLoginError(e instanceof Error ? e.message : String(e));
+                  } finally { setLoginBusy(false); }
+                }}
+                className="w-full rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-black py-3 transition-colors disabled:opacity-50"
+              >
+                {loginBusy ? 'Entrando...' : (loginCreateAccount ? 'Criar conta' : 'Entrar')}
+              </button>
+            </div>
+
+            <button
+              onClick={() => { setLoginCreateAccount(v => !v); setLoginError(''); }}
+              className="w-full mt-4 text-xs text-neutral-400 hover:text-lime-400 underline"
+            >
+              {loginCreateAccount ? 'Já tenho uma conta' : 'Ainda não tenho conta — criar agora'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* MODALS */}
       <MediocrityCalculatorModal
