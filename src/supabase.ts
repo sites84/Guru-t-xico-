@@ -98,10 +98,11 @@ export async function setDoc(ref: DocumentReference, value: any) {
   if (error) throw error;
 }
 
-export async function completeTask(taskId: string, alphaScore: number) {
+export async function completeTask(taskId: string, alphaScore: number, difficulty = '') {
   const { data, error } = await supabase.rpc('complete_own_task', {
     p_task_id: taskId,
     p_alpha_score: alphaScore,
+    p_difficulty: difficulty,
   });
   if (error) throw error;
   if (!data) throw new Error('A missão não foi registrada.');
