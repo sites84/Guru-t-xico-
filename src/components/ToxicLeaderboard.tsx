@@ -189,7 +189,7 @@ export const ToxicLeaderboard: React.FC = () => {
           <div className="space-y-2.5">
             {topUsers.map((leader, index) => {
               const style = getPositionStyling(index);
-              const isCurrentUser = user && user.uid === leader.id;
+              const isCurrentUser = user && user.id === leader.id;
 
               return (
                 <div
