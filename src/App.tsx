@@ -15,7 +15,7 @@ import { ToxicLeaderboard } from './components/ToxicLeaderboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function MainAppContent() {
-  const { user, profile, loginWithGoogle, currentRank, setIsProfileOpen, achievementQueue, dismissCurrentAchievement, dailyStreak } = useAuth();
+  const { user, profile, loginWithGoogle, loginWithEmail, currentRank, setIsProfileOpen, achievementQueue, dismissCurrentAchievement, dailyStreak } = useAuth();
 
   // Termômetro de Mediocridade
   const [isQuizOpen, setIsQuizOpen] = useState(false);
@@ -128,7 +128,26 @@ function MainAppContent() {
               </button>
             ) : (
               <button
-                onClick={loginWithGoogle}
+                onClick={async () => {
+                  const email = window.prompt('E-mail:');
+                  if (!email) return;
+                  const password = window.prompt('Senha (mínimo 6 caracteres):');
+                  if (!password) return;
+                  try {
+                    await loginWithEmail(email, password, false);
+                  } catch (e) {
+                    const msg = e instanceof Error ? e.message : String(e);
+                    if (msg.includes('auth/user-not-found') || msg.includes('auth/invalid-credential')) {
+                      const criar = window.confirm('Usuário não encontrado. Deseja criar uma conta agora?');
+                      if (criar) {
+                        try { await loginWithEmail(email, password, true); }
+                        catch (e2) { alert(e2 instanceof Error ? e2.message : String(e2)); }
+                      }
+                    } else {
+                      alert(msg);
+                    }
+                  }
+                }}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-lime-400 hover:bg-lime-300 text-black font-bold font-tech text-xs rounded-xl transition-all cursor-pointer shrink-0 shadow-sm"
               >
                 <LogIn className="w-3.5 h-3.5 shrink-0" />
