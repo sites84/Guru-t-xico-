@@ -28,7 +28,7 @@ export function getDailyTasks(dayOffset: number = 0): { dateString: string; task
   return { dateString, tasks };
 }
 
-const TASK_STATE_VERSION = '3';
+const TASK_STATE_VERSION = '4';
 
 function migrateTaskStorage() {
   const version = localStorage.getItem('guru_toxico_task_state_version');
@@ -71,8 +71,15 @@ export const AbsurdTasks: React.FC = () => {
     return [];
   });
 
-  // Atualiza a lista de concluídos se o dia ou usuário mudar
+  // Para usuários autenticados, o banco é a fonte de verdade do histórico.
+  // O localStorage continua sendo usado apenas para visitantes e para o estado visual do dia.
   useEffect(() => {
+    if (user) {
+      const serverCompleted = Array.isArray(profile?.completedTaskIds) ? profile.completedTaskIds : [];
+      setCompletedIds(tasks.filter((task) => serverCompleted.includes(task.id)).map((task) => task.id));
+      return;
+    }
+
     const saved = localStorage.getItem(`guru_toxico_completed_10_${activeUserKey}_${currentDayKey}`);
     if (saved) {
       try {
@@ -81,7 +88,7 @@ export const AbsurdTasks: React.FC = () => {
       } catch {}
     }
     setCompletedIds([]);
-  }, [activeUserKey, currentDayKey]);
+  }, [activeUserKey, currentDayKey, user, profile?.completedTaskIds, tasks]);
 
   // Carrossel manual ativo (0 a 9)
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -145,7 +152,9 @@ export const AbsurdTasks: React.FC = () => {
 
     const nextCompleted = [...completedIds, task.id];
     setCompletedIds(nextCompleted);
-    localStorage.setItem(`guru_toxico_completed_10_${activeUserKey}_${currentDayKey}`, JSON.stringify(nextCompleted));
+    if (!user) {
+      localStorage.setItem(`guru_toxico_completed_10_${activeUserKey}_${currentDayKey}`, JSON.stringify(nextCompleted));
+    }
     toxicAudio.playStampThud();
 
     const roast = task.completionRoast || 'Concluiu é, com esse bucho aí? Vamos fingir que acreditamos.';
