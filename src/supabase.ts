@@ -99,8 +99,24 @@ export async function setDoc(ref: DocumentReference, value: any) {
 }
 
 export async function updateDoc(ref: DocumentReference, value: any) {
-  const { error } = await supabase.from(ref.collection).update(value).eq('id', ref.id);
+  if (ref.collection === 'users') {
+    // All user-progress writes go through a database RPC that verifies auth.uid().
+    // This avoids silent zero-row RLS updates, which otherwise look successful to the client.
+    const { data, error } = await supabase.rpc('update_own_user_profile', { patch: value });
+    if (error) throw error;
+    if (!data) throw new Error('Perfil do usuário não foi atualizado.');
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from(ref.collection)
+    .update(value)
+    .eq('id', ref.id)
+    .select('*')
+    .maybeSingle();
+
   if (error) throw error;
+  if (!data) throw new Error('Nenhum registro foi atualizado.');
 }
 
 export function serverTimestamp() {
